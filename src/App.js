@@ -1,25 +1,99 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import './App.css'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Comentario from './components/Comentario'
+
+class App extends Component {
+  state = {
+    comentarios: [
+      {
+        nome: 'João',
+        email: 'joao@mail.com',
+        data: new Date(2020, 3, 19),
+        mensagem: 'Olá, tudo bem?'
+      },
+      {
+        nome: 'Paulo',
+        email: 'paulo@mail.com',
+        data: new Date(2020, 3, 21),
+        mensagem: 'Olá, tudo bem sim'
+      }
+    ],
+    novoComentario: {
+      nome: '',
+      email: '',
+      mensagem: ''
+    }
+  }
+
+  adicionarComentario = evento => {
+    evento.preventDefault()
+    const novoComentario = {...this.state.novoComentario, data: new Date()}
+      this.setState({comentarios: [ ...this.state.comentarios, novoComentario],
+      novoComentario: { nome: '', email: '', mensagem: ''}
+    })
+  }
+
+  removerComentario = comentario => {
+    let lista = this.state.comentarios
+    lista = lista.filter(c => c!== comentario)
+    this.setState({ comentarios: lista})
+  }
+
+  digitacao = evento => {
+    const {name, value} = evento.target
+    this.setState({ novoComentario: {...this.state.novoComentario, [name]: value }})
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h1>Meu projeto</h1>
+        {this.state.comentarios.map((comentario, indice) => (
+          <Comentario 
+            key={indice}
+            nome={comentario.nome} 
+            email={comentario.email}
+            data={comentario.data}
+            onRemove={this.removerComentario.bind(this, comentario)}>
+            {comentario.mensagem}
+          </Comentario>
+        ))}
+
+        <form form='post' onSubmit={this.adicionarComentario} className='Novo-Comentario'>
+          <h2>Adicionar Comentário</h2>
+          <div>
+            <input 
+              type='text' 
+              name='nome'
+              value={this.state.novoComentario.nome}
+              onChange={this.digitacao} 
+              required
+              placeholder='Digite seu nome'/>
+          </div>
+          <div>
+            <input 
+              type='text' 
+              name='email' 
+              value={this.state.novoComentario.email} 
+              onChange={this.digitacao} 
+              required
+              placeholder='Digite seu email'/>
+          </div>
+          <div>
+            <textarea 
+              name='mensagem' 
+              value={this.state.novoComentario.mensagem} 
+              onChange={this.digitacao} 
+              required
+              rows='4'
+            />
+          </div>
+          <button type='submit'>Adicionar Comentário</button>
+        </form>
+      </div>
+    )
+  }
 }
 
 export default App;
